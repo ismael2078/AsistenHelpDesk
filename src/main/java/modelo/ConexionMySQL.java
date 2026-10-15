@@ -9,10 +9,9 @@ public class ConexionMySQL {
     private static final String DRIVER = "com.mysql.cj.jdbc.Driver";
     private static final String BASE_URL = "jdbc:mysql://localhost:3306/";
     private static final String PARAMS = "?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
-    private static final String DATABASE = "bd_helpdesk";
     private static final String USER = "root";
 
-    // Intentos de contraseñas habituales (incluye Admin26$ configurada en MySQL Workbench)
+    private static final String[] DATABASES = {"bd_helpdesk", "helpdesk_hospital", "helpdesk"};
     private static final String[] PASSWORDS = {"Admin26$", "", "root", "1234", "123456"};
 
     public Connection getConexion() {
@@ -24,25 +23,15 @@ public class ConexionMySQL {
             return null;
         }
 
-        // 1. Probar con base de datos bd_helpdesk y passwords configuradas
-        for (String pass : PASSWORDS) {
-            try {
-                conn = DriverManager.getConnection(BASE_URL + DATABASE + PARAMS, USER, pass);
-                if (conn != null) {
-                    return conn;
+        for (String db : DATABASES) {
+            for (String pass : PASSWORDS) {
+                try {
+                    conn = DriverManager.getConnection(BASE_URL + db + PARAMS, USER, pass);
+                    if (conn != null) {
+                        return conn;
+                    }
+                } catch (SQLException ignored) {
                 }
-            } catch (SQLException ignored) {
-            }
-        }
-
-        // 2. Probar con base de datos alternativa 'helpdesk'
-        for (String pass : PASSWORDS) {
-            try {
-                conn = DriverManager.getConnection(BASE_URL + "helpdesk" + PARAMS, USER, pass);
-                if (conn != null) {
-                    return conn;
-                }
-            } catch (SQLException ignored) {
             }
         }
 
